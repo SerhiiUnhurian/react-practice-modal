@@ -1,16 +1,21 @@
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import Button from '../ui/Button';
 import Card from '../ui/Card';
 import ErrorModal from '../ui/ErrorModal';
 import clss from './NewUser.module.css';
 
 const NewUser = ({ onAddUser }) => {
-  const [username, setUserName] = useState('');
-  const [age, setAge] = useState('');
+  const usernameInputRef = useRef();
+  const ageInputRef = useRef();
+
   const [error, setError] = useState(null);
 
   const handleAddUser = ev => {
     ev.preventDefault();
+
+    const username = usernameInputRef.current.value;
+    const age = ageInputRef.current.value;
+
     if (!username.trim() || !age.trim()) {
       return setError({
         title: 'Invalid input',
@@ -32,16 +37,8 @@ const NewUser = ({ onAddUser }) => {
       });
     }
     onAddUser(username, age);
-    setUserName('');
-    setAge('');
-  };
-
-  const handleUsernameChange = ev => {
-    setUserName(ev.target.value);
-  };
-
-  const handleAgeChange = ev => {
-    setAge(ev.target.value);
+    usernameInputRef.current.value = '';
+    ageInputRef.current.value = '';
   };
 
   const handleCloseModal = () => {
@@ -60,19 +57,9 @@ const NewUser = ({ onAddUser }) => {
       <Card className={clss.input}>
         <form onSubmit={handleAddUser}>
           <label htmlFor="username">Username</label>
-          <input
-            type="text"
-            id="username"
-            value={username}
-            onChange={handleUsernameChange}
-          />
+          <input ref={usernameInputRef} type="text" id="username" />
           <label htmlFor="age">Age (years)</label>
-          <input
-            type="number"
-            id="age"
-            value={age}
-            onChange={handleAgeChange}
-          />
+          <input ref={ageInputRef} type="number" id="age" />
           <Button type="submit">Add User</Button>
         </form>
       </Card>
